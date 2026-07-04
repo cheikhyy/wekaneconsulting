@@ -193,15 +193,107 @@ nav.scrolled { box-shadow:0 4px 24px rgba(0,0,0,0.1); }
 }
 .dot.active { width:40px; background:var(--red); }
 .hero-scroll {
-  position:absolute; bottom:28px; right:56px; z-index:10;
-  display:flex; flex-direction:column; align-items:center; gap:8px;
-  color:rgba(255,255,255,0.5); font-size:0.65rem; letter-spacing:3px; text-transform:uppercase;
+  position:absolute; bottom:32px; left:50%; transform:translateX(-50%);
+  z-index:10;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  color:rgba(255,255,255,0.5); font-size:0.6rem; letter-spacing:4px; text-transform:uppercase;
+  cursor:pointer; transition:opacity .3s;
+  text-decoration:none;
 }
-.hero-scroll::after {
-  content:''; width:1px; height:40px; background:rgba(255,255,255,0.3);
-  animation:scrollLine 1.5s ease-in-out infinite;
+.hero-scroll:hover { opacity:.8; }
+.hero-scroll-mouse {
+  width:26px; height:40px;
+  border:2px solid rgba(255,255,255,0.35);
+  border-radius:13px;
+  display:flex; justify-content:center; padding-top:6px;
+  position:relative;
 }
-@keyframes scrollLine { 0%,100%{opacity:.3} 50%{opacity:1} }
+.hero-scroll-mouse::before {
+  content:'';
+  width:3px; height:8px;
+  background:var(--red);
+  border-radius:2px;
+  animation:mouseScroll 2s ease-in-out infinite;
+}
+@keyframes mouseScroll {
+  0%   { transform:translateY(0); opacity:1; }
+  60%  { transform:translateY(10px); opacity:0; }
+  61%  { transform:translateY(0); opacity:0; }
+  100% { transform:translateY(0); opacity:1; }
+}
+.hero-scroll-arrows {
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+}
+.hero-scroll-arrows span {
+  display:block; width:10px; height:10px;
+  border-right:2px solid rgba(255,255,255,0.4);
+  border-bottom:2px solid rgba(255,255,255,0.4);
+  transform:rotate(45deg);
+  animation:arrowPulse 2s ease-in-out infinite;
+}
+.hero-scroll-arrows span:nth-child(1) { animation-delay:0s;    opacity:.3; }
+.hero-scroll-arrows span:nth-child(2) { animation-delay:.2s;   opacity:.6; }
+.hero-scroll-arrows span:nth-child(3) { animation-delay:.4s;   opacity:1;  }
+@keyframes arrowPulse {
+  0%,100% { opacity:.2; }
+  50%     { opacity:1;  }
+}
+
+/* ── HERO PARALLAX ELEMENTS ── */
+.hero-particles {
+  position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden;
+}
+.hero-particle {
+  position:absolute; border-radius:50%;
+  background:rgba(200,16,46,0.15);
+  animation:floatParticle linear infinite;
+}
+@keyframes floatParticle {
+  0%   { transform:translateY(100vh) scale(0); opacity:0; }
+  10%  { opacity:1; }
+  90%  { opacity:.5; }
+  100% { transform:translateY(-20vh) scale(1.2); opacity:0; }
+}
+.hero-line-left {
+  position:absolute; left:48px; top:0; bottom:0; z-index:1;
+  width:1px; background:linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.12) 30%, rgba(255,255,255,0.12) 70%, transparent 100%);
+  pointer-events:none;
+}
+.hero-line-right {
+  position:absolute; right:48px; top:0; bottom:0; z-index:1;
+  width:1px; background:linear-gradient(180deg, transparent 0%, rgba(200,16,46,0.2) 30%, rgba(200,16,46,0.2) 70%, transparent 100%);
+  pointer-events:none;
+}
+.hero-corner {
+  position:absolute; z-index:1; pointer-events:none;
+  width:40px; height:40px;
+}
+.hero-corner.tl { top:24px; left:24px; border-top:2px solid rgba(255,255,255,0.2); border-left:2px solid rgba(255,255,255,0.2); }
+.hero-corner.tr { top:24px; right:24px; border-top:2px solid var(--red); border-right:2px solid var(--red); opacity:.6; }
+.hero-corner.bl { bottom:24px; left:24px; border-bottom:2px solid rgba(255,255,255,0.15); border-left:2px solid rgba(255,255,255,0.15); }
+.hero-corner.br { bottom:24px; right:24px; border-bottom:2px solid var(--red); border-right:2px solid var(--red); opacity:.4; }
+
+/* ── SLIDE CONTENT ENTRANCE ANIMATION ── */
+.slide-eyebrow,
+.slide-title,
+.hero-divider,
+.slide-para,
+.hero-btns {
+  opacity:0;
+  transform:translateY(30px);
+  transition:opacity .7s ease, transform .7s ease;
+}
+.slide.active .slide-eyebrow { opacity:1; transform:translateY(0); transition-delay:.1s; }
+.slide.active .slide-title   { opacity:1; transform:translateY(0); transition-delay:.3s; }
+.slide.active .hero-divider  { opacity:1; transform:translateY(0); transition-delay:.5s; }
+.slide.active .slide-para    { opacity:1; transform:translateY(0); transition-delay:.6s; }
+.slide.active .hero-btns     { opacity:1; transform:translateY(0); transition-delay:.8s; }
+
+@media(max-width:768px) {
+  .hero-scroll { display:none; }
+  .hero-line-left, .hero-line-right { display:none; }
+  .hero-corner { display:none; }
+}
 
 /* ── STATS STRIP ── */
 .stats-strip {
@@ -286,57 +378,138 @@ nav.scrolled { box-shadow:0 4px 24px rgba(0,0,0,0.1); }
 .pill:hover { border-color:var(--red); color:var(--red); }
 .pill::before { content:'◆'; color:var(--red); font-size:0.5rem; }
 
-/* ── EXPERTISE ── */
-.expertise { background:var(--navy); }
+/* ── EXPERTISE SLIDER ── */
+.expertise { background:var(--navy); overflow:hidden; }
 .expertise .eyebrow { color:rgba(212,168,83,0.9); }
 .expertise .eyebrow::before { background:var(--gold); }
-.expertise .section-title { color:var(--white); }
-.expertise .title-sub { color:rgba(255,255,255,0.45); max-width:100%; }
-.exp-tabs { display:flex; gap:0; margin-top:48px; border-bottom:1px solid rgba(255,255,255,0.08); }
-.exp-tab {
-  padding:16px 28px; cursor:pointer; color:rgba(255,255,255,0.45);
-  font-size:0.78rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+
+/* Nav pills */
+.exp-slider-nav {
+  display:flex; gap:0; margin-top:48px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  overflow-x:auto; -webkit-overflow-scrolling:touch;
+}
+.exp-nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding:16px 24px; cursor:pointer;
   border-bottom:3px solid transparent; margin-bottom:-1px;
-  transition:all .25s;
+  transition:all .25s; white-space:nowrap; flex-shrink:0;
 }
-.exp-tab:hover { color:rgba(255,255,255,0.75); }
-.exp-tab.active { color:var(--white); border-bottom-color:var(--red); }
-.exp-panels { margin-top:0; }
-.exp-panel { display:none; }
-.exp-panel.active { display:grid; grid-template-columns:1fr 2fr; gap:0; margin-top:0; }
-.exp-panel-left {
-  background:var(--red); padding:48px 40px;
+.exp-nav-item:hover { background:rgba(255,255,255,0.03); }
+.exp-nav-item.active { border-bottom-color:var(--red); }
+.exp-nav-num {
+  font-family:'Playfair Display',serif; font-size:1rem; font-weight:900;
+  color:rgba(255,255,255,0.2); transition:color .25s;
+}
+.exp-nav-item.active .exp-nav-num { color:var(--red); }
+.exp-nav-label {
+  font-size:0.75rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  color:rgba(255,255,255,0.4); transition:color .25s;
+}
+.exp-nav-item.active .exp-nav-label { color:var(--white); }
+
+/* Slider */
+.exp-slider-wrap {
+  position:relative; overflow:hidden; margin-top:0;
+}
+.exp-slide {
+  display:none; grid-template-columns:300px 1fr; gap:0;
+  animation:expFadeIn .45s ease;
+}
+.exp-slide.active { display:grid; }
+@keyframes expFadeIn {
+  from { opacity:0; transform:translateX(24px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+
+/* Left panel */
+.exp-slide-left {
+  background:var(--red); padding:48px 36px;
   display:flex; flex-direction:column; justify-content:space-between;
+  min-height:500px;
 }
-.exp-panel-left h3 {
+.exp-slide-tag {
+  font-size:0.65rem; font-weight:700; letter-spacing:4px;
+  text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:16px;
+}
+.exp-slide-left h3 {
   font-family:'Playfair Display',serif; color:var(--white);
-  font-size:1.7rem; font-weight:900; line-height:1.2; margin-bottom:16px;
+  font-size:1.6rem; font-weight:900; line-height:1.25; margin-bottom:18px;
 }
-.exp-panel-left p { color:rgba(255,255,255,0.85); font-size:0.9rem; line-height:1.75; }
-.exp-panel-left .btn-white {
+.exp-slide-left p {
+  color:rgba(255,255,255,0.8); font-size:0.88rem; line-height:1.8; flex:1;
+}
+.btn-exp-contact {
   display:inline-block; background:var(--white); color:var(--red);
   font-size:0.72rem; font-weight:700; letter-spacing:2px; text-transform:uppercase;
-  padding:13px 24px; text-decoration:none; margin-top:32px; align-self:flex-start;
-  transition:transform .2s;
+  padding:13px 22px; text-decoration:none; margin-top:28px; align-self:flex-start;
+  transition:transform .2s, box-shadow .2s;
 }
-.exp-panel-left .btn-white:hover { transform:translateY(-2px); }
-.exp-panel-right { background:rgba(255,255,255,0.03); padding:48px 48px; }
-.exp-cols { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
-.exp-col h5 {
-  color:var(--white); font-size:0.78rem; font-weight:700;
-  letter-spacing:1px; text-transform:uppercase; margin-bottom:16px;
-  padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1);
-  display:flex; align-items:center; gap:8px;
+.btn-exp-contact:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.15); }
+
+/* Right panel - rubrique grid */
+.exp-slide-right {
+  background:rgba(255,255,255,0.02); padding:40px 44px;
+  overflow-y:auto; max-height:600px;
 }
-.exp-col h5::before { content:''; width:16px; height:2px; background:var(--red); flex-shrink:0; }
-.exp-col ul { list-style:none; }
-.exp-col ul li {
-  color:rgba(255,255,255,0.5); font-size:0.82rem; padding:5px 0;
-  padding-left:12px; position:relative; line-height:1.5;
-  transition:color .2s;
+.exp-slide-right::-webkit-scrollbar { width:4px; }
+.exp-slide-right::-webkit-scrollbar-track { background:rgba(255,255,255,0.05); }
+.exp-slide-right::-webkit-scrollbar-thumb { background:var(--red); border-radius:2px; }
+
+.exp-rubrique-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:28px;
 }
-.exp-col ul li:hover { color:rgba(255,255,255,0.9); }
-.exp-col ul li::before { content:'›'; position:absolute; left:0; color:var(--red); font-weight:700; }
+.exp-rubrique { }
+.exp-rubrique h5 {
+  color:var(--white); font-size:0.76rem; font-weight:700;
+  letter-spacing:0.8px; text-transform:uppercase;
+  margin-bottom:14px; padding-bottom:10px;
+  border-bottom:2px solid var(--red);
+  line-height:1.4;
+}
+.exp-rubrique ul { list-style:none; }
+.exp-rubrique ul li {
+  color:rgba(255,255,255,0.5); font-size:0.8rem;
+  padding:5px 0 5px 14px; position:relative; line-height:1.5;
+  transition:color .2s; border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.exp-rubrique ul li:hover { color:rgba(255,255,255,0.9); }
+.exp-rubrique ul li::before { content:'›'; position:absolute; left:0; color:var(--red); font-weight:700; }
+
+/* Bottom arrows + progress */
+.exp-slider-arrows {
+  display:flex; align-items:center; gap:16px;
+  padding:20px 0 0; justify-content:flex-end;
+}
+.exp-arrow {
+  width:44px; height:44px; background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12); color:var(--white);
+  font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .2s;
+}
+.exp-arrow:hover { background:var(--red); border-color:var(--red); }
+.exp-progress {
+  flex:1; max-width:200px; height:2px; background:rgba(255,255,255,0.1);
+}
+.exp-progress-bar {
+  height:100%; background:var(--red);
+  transition:width .4s ease;
+  width:25%;
+}
+
+/* RESPONSIVE */
+@media(max-width:1024px) {
+  .exp-rubrique-grid { grid-template-columns:repeat(2,1fr); }
+  .exp-slide { grid-template-columns:240px 1fr; }
+}
+@media(max-width:768px) {
+  .exp-slide { grid-template-columns:1fr; }
+  .exp-slide-left { min-height:auto; padding:32px 24px; }
+  .exp-slide-right { padding:28px 20px; max-height:none; }
+  .exp-rubrique-grid { grid-template-columns:1fr; }
+  .exp-nav-item { padding:12px 16px; }
+  .exp-nav-label { display:none; }
+}
 
 /* ── VALEURS ── */
 .valeurs { background:var(--pearl); }
@@ -862,7 +1035,22 @@ footer p { color:rgba(255,255,255,0.3); font-size:0.78rem; }
     <div class="dot active" onclick="goSlide(0)"></div>
     <div class="dot" onclick="goSlide(1)"></div>
   </div>
-  <div class="hero-scroll">Défiler</div>
+  <!-- Decorative elements -->
+  <div class="hero-particles" id="heroParticles"></div>
+  <div class="hero-line-left"></div>
+  <div class="hero-line-right"></div>
+  <div class="hero-corner tl"></div>
+  <div class="hero-corner tr"></div>
+  <div class="hero-corner bl"></div>
+  <div class="hero-corner br"></div>
+  <!-- Scroll indicator -->
+  <a href="#about" class="hero-scroll">
+    <div class="hero-scroll-mouse"></div>
+    <div class="hero-scroll-arrows">
+      <span></span><span></span><span></span>
+    </div>
+    <span>Défiler</span>
+  </a>
 </div>
 
 <!-- STATS STRIP -->
@@ -921,78 +1109,322 @@ footer p { color:rgba(255,255,255,0.3); font-size:0.78rem; }
     <div class="eyebrow">Au cœur de notre expertise</div>
     <h2 class="section-title" style="color:var(--white);">Nos domaines <span>d'expertise</span></h2>
     <p class="title-sub">WekaneConsulting transforme les ambitions en performances durables.</p>
-    <div class="exp-tabs">
-      <div class="exp-tab active" onclick="showTab(0,this)">Création d'entreprise</div>
-      <div class="exp-tab" onclick="showTab(1,this)">Stratégie</div>
-      <div class="exp-tab" onclick="showTab(2,this)">Capital Humain</div>
-      <div class="exp-tab" onclick="showTab(3,this)">IA & Digital</div>
-    </div>
-    <div class="exp-panels">
-      <div class="exp-panel active" id="tab-0">
-        <div class="exp-panel-left">
-          <div>
-            <h3>Création & Accompagnement d'Entreprise</h3>
-            <p>De l'idée à la croissance, nous transformons vos projets en entreprises structurées, performantes et finançables. Nous accompagnons les entrepreneurs, PME, startups et organisations dans chaque étape de leur développement.</p>
-          </div>
-          <a href="#contact" class="btn-white">Nous contacter</a>
-        </div>
-        <div class="exp-panel-right">
-          <div class="exp-cols">
-            <div class="exp-col"><h5>Diagnostic</h5><ul><li>Analyse de faisabilité</li><li>Étude de marché</li><li>Définition du Business Model</li><li>Stratégie de lancement</li><li>Identification des risques</li></ul></div>
-            <div class="exp-col"><h5>Formalisation</h5><ul><li>Choix de la forme juridique</li><li>Constitution des dossiers</li><li>Agréments et licences</li><li>Business plan complet</li><li>Plan de financement</li></ul></div>
-            <div class="exp-col"><h5>Développement</h5><ul><li>Stratégie commerciale</li><li>Plan marketing digital</li><li>Levée de fonds</li><li>Coaching du dirigeant</li><li>Suivi des performances</li></ul></div>
-          </div>
-        </div>
+
+    <!-- SLIDER NAVIGATION -->
+    <div class="exp-slider-nav">
+      <div class="exp-nav-item active" onclick="showDomaine(0, this)">
+        <span class="exp-nav-num">01</span>
+        <span class="exp-nav-label">Création & Accompagnement</span>
       </div>
-      <div class="exp-panel" id="tab-1">
-        <div class="exp-panel-left">
-          <div>
-            <h3>Stratégie & Transformation Organisationnelle</h3>
-            <p>Nous aidons les organisations à transformer leurs défis en opportunités de croissance grâce à des diagnostics approfondis et un accompagnement opérationnel orienté résultats.</p>
-          </div>
-          <a href="#contact" class="btn-white">Nous contacter</a>
-        </div>
-        <div class="exp-panel-right">
-          <div class="exp-cols">
-            <div class="exp-col"><h5>Diagnostic</h5><ul><li>Audit organisationnel</li><li>Diagnostic financier</li><li>Performance commerciale</li><li>Cartographie des risques</li><li>Positionnement concurrentiel</li></ul></div>
-            <div class="exp-col"><h5>Transformation</h5><ul><li>Vision stratégique</li><li>Modèles opérationnels</li><li>Réingénierie des processus</li><li>Conduite du changement</li><li>Certification ISO</li></ul></div>
-            <div class="exp-col"><h5>Data & KPI</h5><ul><li>Gouvernance des données</li><li>KPI stratégiques</li><li>Tableaux de bord dynamiques</li><li>Visualisation des données</li><li>Aide à la décision</li></ul></div>
-          </div>
-        </div>
+      <div class="exp-nav-item" onclick="showDomaine(1, this)">
+        <span class="exp-nav-num">02</span>
+        <span class="exp-nav-label">Stratégie & Transformation</span>
       </div>
-      <div class="exp-panel" id="tab-2">
-        <div class="exp-panel-left">
-          <div>
-            <h3>Capital Humain</h3>
-            <p>Nous faisons du capital humain un véritable levier de performance durable. Nous accompagnons nos clients dans l'attraction, le développement, la mobilisation et la fidélisation de leurs talents.</p>
-          </div>
-          <a href="#contact" class="btn-white">Nous contacter</a>
-        </div>
-        <div class="exp-panel-right">
-          <div class="exp-cols">
-            <div class="exp-col"><h5>Diagnostic RH</h5><ul><li>Audit organisationnel</li><li>Diagnostic des compétences</li><li>GPEC</li><li>Politiques et procédures RH</li><li>Optimisation des processus</li></ul></div>
-            <div class="exp-col"><h5>Talents</h5><ul><li>Recrutement stratégique</li><li>Hauts potentiels</li><li>Systèmes d'évaluation</li><li>KPI et tableaux RH</li><li>Fidélisation des talents</li></ul></div>
-            <div class="exp-col"><h5>Formation</h5><ul><li>Plans de formation</li><li>Coaching individuel</li><li>Développement du leadership</li><li>Culture d'entreprise</li><li>Accompagnement restructuration</li></ul></div>
-          </div>
-        </div>
+      <div class="exp-nav-item" onclick="showDomaine(2, this)">
+        <span class="exp-nav-num">03</span>
+        <span class="exp-nav-label">Capital Humain</span>
       </div>
-      <div class="exp-panel" id="tab-3">
-        <div class="exp-panel-left">
-          <div>
-            <h3>IA & Transformation Digitale</h3>
-            <p>Nous accompagnons les entreprises dans leur transformation numérique — diagnostics de maturité digitale, stratégies de digitalisation et intégration de solutions d'intelligence artificielle adaptées.</p>
-          </div>
-          <a href="#contact" class="btn-white">Nous contacter</a>
-        </div>
-        <div class="exp-panel-right">
-          <div class="exp-cols">
-            <div class="exp-col"><h5>Diagnostic & Stratégie</h5><ul><li>Audit de maturité digitale</li><li>Analyse des outils numériques</li><li>Feuille de route digitale</li><li>Cas d'usage IA</li><li>Alignement stratégique</li></ul></div>
-            <div class="exp-col"><h5>Digitalisation</h5><ul><li>Dématérialisation</li><li>Automatisation des tâches</li><li>Workflows numériques</li><li>Gestion électronique</li><li>Digitalisation des achats</li></ul></div>
-            <div class="exp-col"><h5>IA & Données</h5><ul><li>Outils IA générative</li><li>Assistants virtuels</li><li>Gouvernance des données</li><li>Tableaux de bord analytiques</li><li>Mesure de l'impact digital</li></ul></div>
-          </div>
-        </div>
+      <div class="exp-nav-item" onclick="showDomaine(3, this)">
+        <span class="exp-nav-num">04</span>
+        <span class="exp-nav-label">IA & Digital</span>
       </div>
     </div>
+
+    <!-- SLIDER WRAPPER -->
+    <div class="exp-slider-wrap">
+
+      <!-- ── DOMAINE 1 ── -->
+      <div class="exp-slide active" id="dom-0">
+        <div class="exp-slide-left">
+          <div class="exp-slide-tag">Domaine 01</div>
+          <h3>Création & Accompagnement d'Entreprise</h3>
+          <p>De l'idée à la croissance, nous transformons vos projets en entreprises structurées, performantes et finançables. Nous accompagnons les entrepreneurs, PME, startups et organisations dans la création, la formalisation, la structuration, le financement et le développement durable de leurs activités.</p>
+          <a href="#contact" class="btn-exp-contact">Nous contacter →</a>
+        </div>
+        <div class="exp-slide-right">
+          <div class="exp-rubrique-grid">
+            <div class="exp-rubrique">
+              <h5>Diagnostic et structuration du projet</h5>
+              <ul>
+                <li>Analyse de l'idée d'entreprise et de sa faisabilité</li>
+                <li>Étude du marché et identification des opportunités</li>
+                <li>Définition du modèle économique (Business Model)</li>
+                <li>Élaboration de la stratégie de lancement</li>
+                <li>Identification des risques et facteurs clés de succès</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Formalisation et création de l'entreprise</h5>
+              <ul>
+                <li>Accompagnement à la formalisation des activités informelles</li>
+                <li>Choix de la forme juridique adaptée</li>
+                <li>Constitution et dépôt des dossiers administratifs</li>
+                <li>Obtention des agréments, autorisations et licences</li>
+                <li>Mise en conformité réglementaire et fiscale</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Planification et structuration financière</h5>
+              <ul>
+                <li>Élaboration du business plan</li>
+                <li>Réalisation des prévisions financières</li>
+                <li>Définition de la stratégie de financement</li>
+                <li>Construction du plan de trésorerie</li>
+                <li>Mise en place d'outils de gestion financière</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Mobilisation des financements</h5>
+              <ul>
+                <li>Préparation des dossiers de financement</li>
+                <li>Accompagnement à la levée de fonds</li>
+                <li>Mise en relation avec investisseurs, banques et fonds d'appui</li>
+                <li>Préparation aux présentations (pitch investisseurs)</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Développement commercial et marketing</h5>
+              <ul>
+                <li>Élaboration de la stratégie commerciale</li>
+                <li>Construction de l'offre de produits ou services</li>
+                <li>Définition de la politique tarifaire</li>
+                <li>Mise en place du plan marketing</li>
+                <li>Développement de la visibilité digitale et institutionnelle</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Suivi et coaching</h5>
+              <ul>
+                <li>Coaching du dirigeant</li>
+                <li>Assistance à la prise de décision</li>
+                <li>Suivi des indicateurs de performance</li>
+                <li>Évaluation périodique des résultats</li>
+                <li>Élaboration de plans d'amélioration continue</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DOMAINE 2 ── -->
+      <div class="exp-slide" id="dom-1">
+        <div class="exp-slide-left">
+          <div class="exp-slide-tag">Domaine 02</div>
+          <h3>Stratégie & Transformation Organisationnelle</h3>
+          <p>Nous aidons les organisations à transformer leurs défis en opportunités de croissance grâce à des diagnostics approfondis, des recommandations stratégiques et un accompagnement opérationnel orienté vers les résultats. Notre approche vise à améliorer durablement la performance, la compétitivité et la résilience des entreprises.</p>
+          <a href="#contact" class="btn-exp-contact">Nous contacter →</a>
+        </div>
+        <div class="exp-slide-right">
+          <div class="exp-rubrique-grid">
+            <div class="exp-rubrique">
+              <h5>Diagnostic stratégique et organisationnel</h5>
+              <ul>
+                <li>Audit organisationnel et opérationnel</li>
+                <li>Analyse du modèle économique</li>
+                <li>Diagnostic financier et de rentabilité</li>
+                <li>Analyse de la performance commerciale</li>
+                <li>Évaluation des processus internes</li>
+                <li>Cartographie des risques et des contraintes</li>
+                <li>Étude de positionnement concurrentiel</li>
+                <li>Analyse des opportunités de marché</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Plan de transformation</h5>
+              <ul>
+                <li>Définition de la vision et des orientations stratégiques</li>
+                <li>Définition de nouveaux modèles opérationnels</li>
+                <li>Optimisation de l'organisation interne</li>
+                <li>Réingénierie des processus et procédures</li>
+                <li>Développement de stratégies de croissance</li>
+                <li>Conception de stratégies commerciales et marketing</li>
+                <li>Élaboration de plans de diversification</li>
+                <li>Structuration de partenariats stratégiques</li>
+                <li>Définition de feuilles de route et plans d'action</li>
+                <li>Conduite du changement</li>
+                <li>Stratégie marketing digital</li>
+                <li>Plan de communication</li>
+                <li>Accompagnement à la certification ISO</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Data driven et suivi des KPI</h5>
+              <ul>
+                <li>Mise en place de référentiels de données</li>
+                <li>Standardisation des processus de collecte des données</li>
+                <li>Mise en place d'une gouvernance des données</li>
+                <li>Définition de KPI stratégiques, financiers, commerciaux et opérationnels</li>
+                <li>Construction de tableaux de bord dynamiques</li>
+                <li>Visualisation des données et aide à la décision</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DOMAINE 3 ── -->
+      <div class="exp-slide" id="dom-2">
+        <div class="exp-slide-left">
+          <div class="exp-slide-tag">Domaine 03</div>
+          <h3>Capital Humain</h3>
+          <p>Nous aidons les organisations à faire du capital humain un véritable levier de performance durable. Grâce à des diagnostics approfondis et des solutions sur mesure, nous accompagnons nos clients dans l'attraction, le développement, la mobilisation et la fidélisation de leurs talents afin de renforcer leur compétitivité et leur efficacité organisationnelle.</p>
+          <a href="#contact" class="btn-exp-contact">Nous contacter →</a>
+        </div>
+        <div class="exp-slide-right">
+          <div class="exp-rubrique-grid">
+            <div class="exp-rubrique">
+              <h5>Diagnostic et évaluation</h5>
+              <ul>
+                <li>Diagnostic de la fonction RH</li>
+                <li>Audit organisationnel et analyse des effectifs</li>
+                <li>Diagnostic des compétences et des besoins en formation</li>
+                <li>Diagnostic des processus RH et de leur efficacité</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Interventions clés</h5>
+              <ul>
+                <li>Gestion prévisionnelle des emplois et des compétences (GPEC)</li>
+                <li>Élaboration de politiques et procédures RH</li>
+                <li>Mise en place de référentiels de postes et des compétences</li>
+                <li>Optimisation des processus RH</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Gestion des talents</h5>
+              <ul>
+                <li>Recrutement et sélection des profils stratégiques</li>
+                <li>Mise en place de systèmes de gestion des talents</li>
+                <li>Identification et développement des hauts potentiels</li>
+                <li>Planification de la relève et gestion des successions</li>
+                <li>Fidélisation des talents clés</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Formation et développement des compétences</h5>
+              <ul>
+                <li>Élaboration de plans de formation</li>
+                <li>Renforcement des capacités techniques et managériales</li>
+                <li>Coaching individuel et collectif</li>
+                <li>Développement du leadership</li>
+                <li>Accompagnement des dirigeants et managers</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Performance et engagement</h5>
+              <ul>
+                <li>Mise en place de systèmes d'évaluation de la performance</li>
+                <li>Définition d'indicateurs RH et tableaux de bord</li>
+                <li>Conception de systèmes de reconnaissance et de motivation</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Transformation et conduite du changement</h5>
+              <ul>
+                <li>Accompagnement des transformations organisationnelles</li>
+                <li>Renforcement de la culture d'entreprise</li>
+                <li>Facilitation de la communication interne</li>
+                <li>Accompagnement des projets de restructuration</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DOMAINE 4 ── -->
+      <div class="exp-slide" id="dom-3">
+        <div class="exp-slide-left">
+          <div class="exp-slide-tag">Domaine 04</div>
+          <h3>IA & Transformation Digitale</h3>
+          <p>Nous accompagnons les entreprises dans leur transformation numérique en réalisant des diagnostics de maturité digitale, en élaborant des stratégies de digitalisation, en optimisant les processus métiers et en intégrant des solutions d'intelligence artificielle adaptées à leurs besoins.</p>
+          <a href="#contact" class="btn-exp-contact">Nous contacter →</a>
+        </div>
+        <div class="exp-slide-right">
+          <div class="exp-rubrique-grid">
+            <div class="exp-rubrique">
+              <h5>Diagnostic de maturité digitale et IA</h5>
+              <ul>
+                <li>Audit des processus métiers</li>
+                <li>Analyse des outils numériques existants</li>
+                <li>Évaluation de la maturité digitale de l'entreprise</li>
+                <li>Cartographie des flux d'information et de données</li>
+                <li>Identification des tâches répétitives pouvant être automatisées</li>
+                <li>Évaluation de la culture numérique des équipes</li>
+                <li>Analyse des besoins en intelligence artificielle</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Élaboration de la stratégie digitale</h5>
+              <ul>
+                <li>Définir une vision claire de la transformation numérique</li>
+                <li>Définition des priorités stratégiques</li>
+                <li>Alignement des projets digitaux avec les objectifs</li>
+                <li>Identification des technologies adaptées</li>
+                <li>Construction d'une feuille de route court, moyen et long terme</li>
+                <li>Définition des indicateurs de performance</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Optimisation et digitalisation des processus</h5>
+              <ul>
+                <li>Dématérialisation des procédures</li>
+                <li>Digitalisation des processus administratifs</li>
+                <li>Automatisation des tâches récurrentes</li>
+                <li>Mise en place de workflows numériques</li>
+                <li>Réduction des délais de traitement</li>
+                <li>Gestion électronique des documents</li>
+                <li>Automatisation des factures</li>
+                <li>Gestion numérique des ressources humaines</li>
+                <li>Digitalisation des achats et approvisionnements</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Intégration de solutions IA</h5>
+              <ul>
+                <li>Exploiter l'IA pour accroître la productivité</li>
+                <li>Identification des cas d'usage IA</li>
+                <li>Sélection des solutions adaptées</li>
+                <li>Intégration d'outils d'IA générative</li>
+                <li>Mise en place d'assistants virtuels internes</li>
+                <li>Accompagnement à la conduite du changement</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Gouvernance et valorisation des données</h5>
+              <ul>
+                <li>Faire de la donnée un levier stratégique</li>
+                <li>Audit de la qualité des données</li>
+                <li>Structuration et centralisation des données</li>
+                <li>Mise en place de tableaux de bord</li>
+                <li>Définition d'une gouvernance des données</li>
+                <li>Sécurisation des informations sensibles</li>
+              </ul>
+            </div>
+            <div class="exp-rubrique">
+              <h5>Mesure de l'impact de la transformation digitale</h5>
+              <ul>
+                <li>Définition des indicateurs de performance</li>
+                <li>Mesure des gains de productivité</li>
+                <li>Évaluation du retour sur investissement</li>
+                <li>Ajustement de la feuille de route</li>
+                <li>Accompagnement continu</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end slider-wrap -->
+
+    <!-- SLIDER ARROWS -->
+    <div class="exp-slider-arrows">
+      <button class="exp-arrow exp-prev" onclick="moveExp(-1)">&#8592;</button>
+      <div class="exp-progress">
+        <div class="exp-progress-bar" id="expProgressBar"></div>
+      </div>
+      <button class="exp-arrow exp-next" onclick="moveExp(1)">&#8594;</button>
+    </div>
+
   </div>
 </section>
 
@@ -1157,7 +1589,6 @@ footer p { color:rgba(255,255,255,0.3); font-size:0.78rem; }
       <div class="contact-left">
         <div>
           <h3>Prêt à transformer votre organisation ?</h3>
-          <div class="contact-info-item"><label>Adresse</label><p>Cité des Magistrats Sam Notaire, Lot n°20<br>Prolongement VDN 3, Dakar, Sénégal</p></div>
           <div class="contact-info-item"><label>Téléphone</label><p><a href="tel:+221338034368">+221 33 803 43 68</a><br><a href="tel:+221781946600">+221 78 194 66 00</a></p></div>
           <div class="contact-info-item"><label>Email</label><a href="mailto:contact@wekaneconsulting.com">contact@wekaneconsulting.com</a></div>
           <div class="contact-info-item"><label>Site web</label><a href="http://www.wekaneconsulting.com">www.wekaneconsulting.com</a></div>
@@ -1210,6 +1641,40 @@ footer p { color:rgba(255,255,255,0.3); font-size:0.78rem; }
 </footer>
 
 <script>
+// HERO PARTICLES
+(function() {
+  const container = document.getElementById('heroParticles');
+  if (!container) return;
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'hero-particle';
+    const size = Math.random() * 6 + 2;
+    p.style.cssText = [
+      'width:' + size + 'px',
+      'height:' + size + 'px',
+      'left:' + Math.random() * 100 + '%',
+      'animation-duration:' + (Math.random() * 12 + 8) + 's',
+      'animation-delay:' + (Math.random() * 8) + 's',
+    ].join(';');
+    container.appendChild(p);
+  }
+})();
+
+// HERO PARALLAX on mouse move
+document.querySelector('.hero').addEventListener('mousemove', function(e) {
+  const rect = this.getBoundingClientRect();
+  const cx = (e.clientX - rect.left) / rect.width  - 0.5;
+  const cy = (e.clientY - rect.top)  / rect.height - 0.5;
+  const activeBg = this.querySelector('.slide.active .slide-bg');
+  if (activeBg) {
+    activeBg.style.transform = 'scale(1.06) translate(' + (cx * 12) + 'px,' + (cy * 8) + 'px)';
+  }
+});
+document.querySelector('.hero').addEventListener('mouseleave', function() {
+  const activeBg = this.querySelector('.slide.active .slide-bg');
+  if (activeBg) activeBg.style.transform = 'scale(1)';
+});
+
 // HAMBURGER MENU
 function toggleMenu() {
   const menu = document.getElementById('nav-links');
@@ -1237,20 +1702,44 @@ let cur=0;
 const slides=document.querySelectorAll('.slide');
 const dots=document.querySelectorAll('.dot');
 function goSlide(n){
-  slides[cur].classList.remove('active');dots[cur].classList.remove('active');
+  // Reset content for leaving slide
+  slides[cur].querySelectorAll('.slide-eyebrow,.slide-title,.hero-divider,.slide-para,.hero-btns').forEach(el => {
+    el.style.opacity='0'; el.style.transform='translateY(30px)';
+  });
+  slides[cur].classList.remove('active');
+  dots[cur].classList.remove('active');
   cur=(n+slides.length)%slides.length;
-  slides[cur].classList.add('active');dots[cur].classList.add('active');
+  slides[cur].classList.add('active');
+  dots[cur].classList.add('active');
 }
 function changeSlide(d){goSlide(cur+d);}
 setInterval(()=>changeSlide(1),6000);
 
-// EXPERTISE TABS
-function showTab(idx,el){
-  document.querySelectorAll('.exp-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.exp-panel').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('tab-'+idx).classList.add('active');
+// EXPERTISE SLIDER
+let expCurrent = 0;
+const expTotal = 4;
+
+function updateExpProgress() {
+  const bar = document.getElementById('expProgressBar');
+  if (bar) bar.style.width = ((expCurrent + 1) / expTotal * 100) + '%';
 }
+
+function showDomaine(idx, el) {
+  document.querySelectorAll('.exp-nav-item').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.exp-slide').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else document.querySelectorAll('.exp-nav-item')[idx].classList.add('active');
+  document.getElementById('dom-' + idx).classList.add('active');
+  expCurrent = idx;
+  updateExpProgress();
+}
+
+function moveExp(dir) {
+  const next = (expCurrent + dir + expTotal) % expTotal;
+  showDomaine(next, null);
+}
+
+updateExpProgress();
 
 // SCROLL
 window.addEventListener('scroll',()=>{
